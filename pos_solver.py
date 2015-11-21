@@ -97,7 +97,7 @@ class Solver:
             max_s = 0.0
             for speech in self.part_of_speech.keys():
                 if (word, speech) not in self.emission:
-                    prob_each = self.emission[(word, speech)] = 0
+                    prob_each = self.emission[(word, speech)] = 1e-10
                 else:
                     prob_each = self.emission[(word, speech)] * self.prob_speech[speech]
                 if prob_each > max_s:
@@ -118,7 +118,43 @@ class Solver:
         return [ [ [ "noun" ] * len(sentence)], [[0] * len(sentence),] ]
 
     def viterbi(self, sentence):
-        return [ [ [ "noun" ] * len(sentence)], [] ]
+        output_list = []
+        v = {}
+        sequence = {}
+        for speech in self.part_of_speech.keys():
+            if sentence[0] not in self.emission:
+                self.emission[sentence[0]] = 1e-100
+            prob = self.initial_state_distribution[speech] * self.emission[sentence[0]]
+            v[(speech, 0)] = prob
+        for x in range(1, len(sentence)):
+            for speech1 in self.part_of_speech.keys():
+                max_prob = 0.0
+                max_speech = None
+                for speech2 in self.part_of_speech.keys():
+                    prob = v[(speech2, x-1)] * self.transition[(speech2, speech1)]
+                    if prob > max_prob:
+                        max_prob = prob
+                        max_speech = speech2
+                if max_prob == 0:
+                    max_prob = 1e-100
+                    max_speech = 'noun'
+                v[(speech1, x)] = self.emission[(sentence[x], speech1)] * max_prob
+                sequence[(speech1, x)] = max_speech
+        tn = len(sentence) - 1
+        max = 0.0
+        for speech in self.part_of_speech.keys():
+            if v[(speech, tn)] > max:
+                max = v[(speech, tn)]
+                max_speech = speech
+        output_list.append(max_speech)
+        tn = len(sentence)
+        for x in range(0, tn-1):
+            speech = sequence[(max_speech, tn - x - 1)]
+            max_speech = speech
+            output_list.append(speech)
+
+        output_list.reverse()
+        return [ [output_list], [] ]
 
 
     # This solve() method is called by label.py, so you should keep the interface the
