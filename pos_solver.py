@@ -97,7 +97,7 @@ class Solver:
             max_s = 0.0
             for speech in self.part_of_speech.keys():
                 if (word, speech) not in self.emission:
-                    prob_each = self.emission[(word, speech)] = 1e-10
+                    prob_each = self.emission[(word, speech)] = 0
                 else:
                     prob_each = self.emission[(word, speech)] * self.prob_speech[speech]
                 if prob_each > max_s:
@@ -122,9 +122,9 @@ class Solver:
         v = {}
         sequence = {}
         for speech in self.part_of_speech.keys():
-            if sentence[0] not in self.emission:
-                self.emission[sentence[0]] = 1e-100
-            prob = self.initial_state_distribution[speech] * self.emission[sentence[0]]
+            if (sentence[0], speech) not in self.emission:
+                self.emission[(sentence[0], speech)] = 1e-10
+            prob = self.initial_state_distribution[speech] * self.emission[(sentence[0], speech)]
             v[(speech, 0)] = prob
         for x in range(1, len(sentence)):
             for speech1 in self.part_of_speech.keys():
@@ -136,7 +136,7 @@ class Solver:
                         max_prob = prob
                         max_speech = speech2
                 if max_prob == 0:
-                    max_prob = 1e-100
+                    max_prob = 1e-10
                     max_speech = 'noun'
                 v[(speech1, x)] = self.emission[(sentence[x], speech1)] * max_prob
                 sequence[(speech1, x)] = max_speech
