@@ -30,7 +30,21 @@ class Solver:
     word = {}
 
     def posterior(self, sentence, label):
-        return 0
+        sum = 0.0
+        multiplcation = 1.0
+        for x in range(0, len(sentence)):
+            emission_value = self.emission[(sentence[x], label[x])]
+            if emission_value == 0:
+                emission_value = 1e-10
+            sum += emission_value * self.prob_speech[label[x]]
+            multiplcation *= emission_value * self.prob_speech[label[x]]
+            #hack hack !!! added temporary to stop issue because of no solution for mcmc and marginal.
+            #multiplication value becoming 0
+            if multiplcation == 0:
+                multiplcation = 1e-100
+        result = multiplcation/sum
+
+        return math.log(result)
 
     # Do the training!
     #
@@ -86,7 +100,7 @@ class Solver:
                     self.transition[(x, y)] = 1e-10
                 else:
                     self.transition[(x, y)] /= self.part_of_speech[x]
-        print "Training Complete"
+
     # Functions for each algorithm.
     #
     def naive(self, sentence):
@@ -112,7 +126,7 @@ class Solver:
         return [ [ [ "noun" ] * len(sentence) ] * sample_count, [] ]
 
     def best(self, sentence):
-        return [ [ [ "noun" ] * len(sentence)], [] ]
+        return self.viterbi(sentence)
 
     def max_marginal(self, sentence):
         return [ [ [ "noun" ] * len(sentence)], [[0] * len(sentence),] ]
