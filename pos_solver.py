@@ -38,7 +38,8 @@
 #
 # Best:
 # Here we are using Viterbi as our best algorithm. With fined tuned Viterbi(as explained in assumptions section) we are
-# getting our best results.
+# getting our best results. For cases where max probability is zero then we infer the word is unknown. Thus assigning
+# probability of speech to max probability. This increases percentage by 0.05%(for words) and 0.25%(for sentences)
 #
 # Comments are provided for each function for better understanding
 # ----------------------------------------------------------------------------------------------------------------------
@@ -49,7 +50,7 @@
 #        2. Sampler:       18.60%                0.00%
 #   3. Max marginal:       18.60%                0.00%
 #            4. MAP:       95.69%               57.90%
-#           5. Best:       95.69%               57.90%
+#           5. Best:       95.74%               58.15%
 #
 #-----------------------------------------------------------------------------------------------------------------------
 #
@@ -207,8 +208,7 @@ class Solver:
         for speech in self.part_of_speech.keys():
             if (sentence[0], speech) not in self.emission:
                 self.emission[(sentence[0], speech)] = 1e-10
-            prob = self.initial_state_distribution[speech] * self.emission[(sentence[0], speech)]
-            v[(speech, 0)] = prob
+            v[(speech, 0)] = self.initial_state_distribution[speech] * self.emission[(sentence[0], speech)]
         #finding value for each state
         for x in range(1, len(sentence)):
             for speech1 in self.part_of_speech.keys():
@@ -221,7 +221,7 @@ class Solver:
                         max_speech = speech2
                 #if probability is zero then tag 'noun' POS
                 if max_prob == 0:
-                    max_prob = 1e-10
+                    max_prob = self.prob_speech[speech1]
                     max_speech = 'noun'
                 v[(speech1, x)] = self.emission[(sentence[x], speech1)] * max_prob
                 #storing POS with maximum probability for the state
@@ -259,7 +259,7 @@ class Solver:
         #finding values for state 0 for each POS for first word of the sequence
         for speech in self.part_of_speech.keys():
             if (sentence[0], speech) not in self.emission:
-                self.emission[(sentence[0], speech)] = 1e-10
+                self.emission[(sentence[0], speech)] = 0.001
             prob = self.initial_state_distribution[speech] * self.emission[(sentence[0], speech)]
             v[(speech, 0)] = prob
         #finding value for each state
@@ -274,7 +274,7 @@ class Solver:
                         max_speech = speech2
                 #if probability is zero then tag 'noun' POS
                 if max_prob == 0:
-                    max_prob = 1e-10
+                    max_prob = 0.01
                     max_speech = 'noun'
                 v[(speech1, x)] = self.emission[(sentence[x], speech1)] * max_prob
                 #storing POS with maximum probability for the state
