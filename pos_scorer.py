@@ -1,11 +1,4 @@
-###################################
-# CS B551 Fall 2015, Assignment #5
-# 
 # Author of the code present in this file: Prof. David Crandall
-#
-# PLEASE DON'T MODIFY THIS FILE.
-# Edit pos_solver.py instead!
-#
 
 class Score:
     def __init__(self):
