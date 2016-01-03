@@ -1,6 +1,3 @@
-###################################
-# CS B551 Fall 2015, Assignment #5
-#
 # Your names and user ids:
 # 1. Nishant Shah (nishshah)
 # 2. Pranav Pande (pmpande)
