@@ -1,10 +1,4 @@
-###################################
-# CS B551 Fall 2015, Assignment #5
 # Author of the code present in this file: Prof. David Crandall
-#
-# There should be no need to modify this file, although you 
-# can if you really want. Edit pos_solver.py instead!
-#
 
 from pos_scorer import Score
 from pos_solver import Solver
