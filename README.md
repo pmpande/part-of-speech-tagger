@@ -6,8 +6,8 @@ This project is based on skeleton code by PROF. DAVID CRANDALL.
 The files contained in this project specifies information of authors for each method or function written in that file.
 
 Contributers to this project:
-1. PRANAV PANDE (pmpande@iu.edu)
-2. NISHANT SHAH (nishshah@iu.edu)
+1. PRANAV PANDE 
+2. NISHANT SHAH 
 
 # Code Description
 
